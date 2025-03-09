@@ -17,14 +17,20 @@ FPS = float(60)
 left = bool(False)
 right = bool(False)
 
+#Game Variables
+gravity = float(0.75)
+
 #colours
+bgColour = tuple((100,200,130))
+RedColour = tuple((255,0,0))
+
 def draw_background():
-    window.fill((100,200,130))
+    window.fill(bgColour)
 
 
 GameRunning = True
 
-Gangster = ShooterCharacter('player',200, 200, 0.1,5)
+Gangster = ShooterCharacter('gangster',200, 200, 0.1,5)
 Police = ShooterCharacter('enemy',400, 200, 0.1,5)
 
 while GameRunning:
