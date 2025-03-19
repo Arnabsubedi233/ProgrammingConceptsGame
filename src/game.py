@@ -1,5 +1,5 @@
 import pygame
-from characters.Gangster import *
+from characters.Gangster.Gangster import *
  
 pygame.init()
  
@@ -30,8 +30,8 @@ def draw_background():
  
 GameRunning = True
  
-Gangster = ShooterCharacter('gangster',200, 200, 1,2)
-Police = ShooterCharacter('gangster',400, 200, 1,2)
+Gangster = ShooterCharacter('gangster',200, 200, 1,2,50)
+Police = ShooterCharacter('cop',400, 200, 1,2,50)
  
 while GameRunning:
     game_clock.tick(FPS)
