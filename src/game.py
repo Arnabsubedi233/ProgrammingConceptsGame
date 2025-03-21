@@ -108,7 +108,7 @@ while GAME_RUNNING:
     #Event Handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            GameRunning = False
+            GAME_RUNNING = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_a:
                 left = True
@@ -119,7 +119,7 @@ while GAME_RUNNING:
             if event.key == pygame.K_SPACE:
                 shooting = True
             if event.key == pygame.K_ESCAPE:
-                GameRunning = False
+                GAME_RUNNING = False
             if event.key == pygame.K_q:
                 grenade = True
  
