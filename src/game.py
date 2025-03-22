@@ -2,21 +2,18 @@ import pygame
 from GameItemsCharacters.shooter.shooter import *
 from GameItemsCharacters.bullet.bullet import *
 from GameItemsCharacters.grenade.grenade import *
+from constants.gameConstants import *
+from constants.colours import *
+from constants.gameVariables import *
  
 pygame.init()
-
- 
-#constants
-WINDOW_WIDTH = int(800)
-WINDOW_HEIGHT = int(WINDOW_WIDTH * 0.8)
-TILE_SIZE= float(50)
 
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption('Cops and Robbers Game')
  
-#FPS Settings
+#Clock Settings
 clock = pygame.time.Clock()
-FPS = float(60)
+
  
 #Player actions
 left = bool(False)
@@ -24,14 +21,6 @@ right = bool(False)
 shooting = bool(False)
 grenade = bool(False)
 throw_grenade = bool(False)
- 
-#Game Variables
-GRAVITY = float(0.75)
-GAME_RUNNING = True
- 
-#colours
-bgColour = tuple((100,200,130))
- 
 
 def draw_background():
     """
@@ -40,7 +29,7 @@ def draw_background():
     This function uses the global variables 'window' and 'bgColour' to fill the entire
     game window with the specified background color.
     """
-    window.fill(bgColour)
+    window.fill(BGCOLOUR)
  
 #Characters
 gangster = ShooterCharacter('gangster',200, 200, 1.2,2,100,5)
