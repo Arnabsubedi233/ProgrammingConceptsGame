@@ -4,9 +4,14 @@ from GameItemsCharacters.bullet.bullet import *
 from GameItemsCharacters.grenade.grenade import *
 from GameItemsCharacters.itemBoxes.itemBoxes import *
 from GameItemsCharacters.healthBar.healthBar import *
+from GameItemsCharacters.decorations.decorations import *
+from GameItemsCharacters.water.water import *
+from GameItemsCharacters.world.world import *
+from GameItemsCharacters.exit.exit import *
 from constants.gameConstants import *
 from constants.colours import *
 from constants.gameVariables import *
+
 
 #pygame initialisation
 pygame.init()
@@ -18,12 +23,15 @@ pygame.display.set_caption('Cops and Robbers Game')
 #Clock Settings
 clock = pygame.time.Clock()
 
+level = int(1)
+
 #Player actions
 left = bool(False)
 right = bool(False)
 shooting = bool(False)
 grenade = bool(False)
 throw_grenade = bool(False)
+
 
 #drawing text on screen
 font = pygame.font.SysFont('Calibri', 25)
@@ -41,12 +49,6 @@ def draw_background():
     """
     window.fill(BGCOLOUR)
  
-#Characters
-gangster = ShooterCharacter('gangster',200, 200, 1.2,2,100,5)
-health_bar = HealthBar(10, 10, gangster.health, gangster.health)
-
-cop1 = ShooterCharacter('cop',400, 200, 1.2,2,50,5)
-cop2 = ShooterCharacter('cop',500, 200, 1.2,2,50,5)
 
 #Groups
 bullets = pygame.sprite.Group()
@@ -54,23 +56,32 @@ grenades = pygame.sprite.Group()
 cops = pygame.sprite.Group()
 explosions = pygame.sprite.Group()
 itemBoxes = pygame.sprite.Group()
-
-#temp - create item boxes
-item_box = ItemBox('Health', 100, 260)
-itemBoxes.add(item_box)
-item_box = ItemBox('Ammo', 400, 260)
-itemBoxes.add(item_box)
-item_box = ItemBox('Grenade', 500, 260)
-itemBoxes.add(item_box)
+decorations = pygame.sprite.Group()
+waters = pygame.sprite.Group()
+exits = pygame.sprite.Group()
 
 
-#adding characters to group
-cops.add(cop1)
-cops.add(cop2)
+#create empty tile list
+world_data = []
+for row in range(ROWS):
+	r = [-1] * COLUMNS
+	world_data.append(r)
+#load in level data and create world
+with open(f'levels/level{level}_data.csv', newline='') as csvfile:
+	reader = csv.reader(csvfile, delimiter=',')
+	for x, row in enumerate(reader):
+		for y, tile in enumerate(row):
+			world_data[x][y] = int(tile)
+    
+world = World()
+gangster, health_bar = world.process_data(world_data,waters,decorations,itemBoxes,exits,cops)
+
+
  
 while GAME_RUNNING:
     clock.tick(FPS)
     draw_background()
+    world.draw(window)
     health_bar.draw(window, gangster.health)
 
     text('AMMO: ', font, WHITE, 10, 35)
@@ -101,6 +112,16 @@ while GAME_RUNNING:
 
     itemBoxes.update(gangster)
     itemBoxes.draw(window)
+
+    decorations.update()
+    decorations.draw(window)
+
+    waters.update()
+    waters.draw(window)
+
+    exits.update()
+    exits.draw(window)
+
 
        #for each cop in the group, update their attributes and then draw them
     for cop in cops:

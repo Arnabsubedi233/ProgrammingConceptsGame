@@ -34,12 +34,12 @@ class ItemBox(pygame.sprite.Sprite):
 		if pygame.sprite.collide_rect(self, gangster):
 	
 			if self.item_type == 'Health':
-				gangster.health += 25
+				gangster.health += 30
 				if gangster.health > gangster.max_health:
 					gangster.health = gangster.max_health
 			elif self.item_type == 'Ammo':
-				gangster.ammo += 15
+				gangster.ammo += 20
 			elif self.item_type == 'Grenade':
-				gangster.grenades += 3
+				gangster.grenades += 4
 		
 			self.kill()
