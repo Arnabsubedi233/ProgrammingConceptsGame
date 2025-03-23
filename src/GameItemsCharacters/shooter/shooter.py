@@ -1,5 +1,7 @@
 import pygame
 import os
+import random
+from constants.gameConstants import *
 from GameItemsCharacters.bullet.bullet import Bullet
 
 class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
@@ -24,6 +26,12 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         self.frame_index = int(0)
         self.action = int(0)
         self.update_time = pygame.time.get_ticks()
+        #Enemy variables
+        self.move_counter = int(0)
+        self.sight = pygame.Rect(0, 0, 150, 20)
+        self.still = bool(False)
+        self.still_counter = int(0)
+
        
         #animation configuration
         animations = ['Idle','Run','Jump','Dead']
@@ -40,6 +48,54 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         self.image = self.animation_list[self.action][self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+    
+    def enemy_auto(self,gangster,bullets):
+        """
+        Controls the automatic behavior of an enemy character.
+        Parameters:
+        gangster (object): The enemy character that this character interacts with.
+        bullets (list): A list to store bullets fired by the enemy.
+        Behavior:
+        - If both the enemy and the gangster are alive:
+            - If the enemy is not still and a random condition is met, the enemy stops moving for a short period.
+            - If the gangster is within the enemy's sight, the enemy stops moving and shoots.
+            - If the gangster is not within sight and the enemy is not still:
+                - The enemy moves in the current direction and updates its action.
+                - The enemy's sight is adjusted based on its direction.
+                - If the enemy has moved a certain distance, it changes direction.
+            - If the enemy is still, it counts down the still counter and resumes movement when the counter reaches zero.
+        """
+        if self.alive and gangster.alive:
+            if self.still == False and random.randint(1, 200) == 1:
+                self.update_action(0)  
+                self.still = True
+                self.still_counter = 50
+            if self.sight.colliderect(gangster.rect):
+                self.update_action(0) 
+                self.shoot(bullets)
+                
+            else:
+                if self.still == False:
+                    if self.direction == 1:
+                        enemy_moving_right = True
+                    else:
+                        enemy_moving_right = False
+                    enemy_moving_left = not enemy_moving_right
+                    self.move(enemy_moving_left, enemy_moving_right)
+                    self.update_action(1) 
+                    self.move_counter += 1
+                    self.sight.center = (
+                        self.rect.centerx + 75 * self.direction,
+                        self.rect.centery
+                    )
+
+                    if self.move_counter > TILE_SIZE:
+                        self.direction *= -1
+                        self.move_counter *= -1
+                else:
+                    self.still_counter -= 1
+                    if self.still_counter <= 0:
+                        self.still = False
 
     def update_character(self):
         """
@@ -170,7 +226,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         """
         if self.shooting_cooldown == 0 and self.ammo > 0:
             self.shooting_cooldown = 20
-            bullet = Bullet(self.rect.centerx + (0.7 * self.rect.size[0] * self.direction), 238 , self.direction)
+            bullet = Bullet(self.rect.centerx + (0.7 * self.rect.size[0] * self.direction), 255 , self.direction)
             print(self.health)
             bullet_group.add(bullet)
             self.ammo -= 1

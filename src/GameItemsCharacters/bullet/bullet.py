@@ -1,13 +1,13 @@
 import pygame
 
 
-bullet = pygame.image.load('images/gameItems/Bullet.png')
+bulletImg = pygame.image.load('images/gameItems/Bullet.png')
 
 class Bullet(pygame.sprite.Sprite):
 	def __init__(self, x, y, direction):
 		pygame.sprite.Sprite.__init__(self)
 		self.speed = float(10)
-		self.image = bullet
+		self.image = pygame.transform.scale(bulletImg, (10, 10))  # Resize the bullet image
 		self.rect = self.image.get_rect()
 		self.rect.center = (x, y)
 		self.direction = direction

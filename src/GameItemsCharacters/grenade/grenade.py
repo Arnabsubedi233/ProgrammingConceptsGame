@@ -1,7 +1,7 @@
 import pygame
 from GameItemsCharacters.explosion.explosion import Explosion
 
-grenade = pygame.image.load('images/gameItems/Grenade.png')
+grenadeImg = pygame.image.load('images/gameItems/Grenade.png')
 
 class Grenade(pygame.sprite.Sprite):
     def __init__(self, x, y, direction):
@@ -9,7 +9,7 @@ class Grenade(pygame.sprite.Sprite):
         self.clock = 100
         self.vel_y = -11
         self.speed = 7
-        self.image = grenade
+        self.image = grenadeImg
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.direction = direction
