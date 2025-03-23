@@ -143,7 +143,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             self.direction = 1
  
         if self.jump and self.in_air == False:
-            self.vel_y = -11
+            self.vel_y = -15
             self.jump = False
             self.in_air = True
  
