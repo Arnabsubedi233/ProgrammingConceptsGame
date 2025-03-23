@@ -99,11 +99,11 @@ while GAME_RUNNING:
     gangster.draw(window)
 
     #update bullets and draw them
-    bullets.update(WINDOW_WIDTH,cops,gangster,bullets)
+    bullets.update(WINDOW_WIDTH,cops,gangster,bullets,world)
     bullets.draw(window)
 
     #update grenades and draw them
-    grenades.update(WINDOW_WIDTH,GRAVITY,explosions,gangster,cops,TILE_SIZE)
+    grenades.update(world,GRAVITY,explosions,gangster,cops,TILE_SIZE)
     grenades.draw(window)
 
     #update explosions and draw them
@@ -125,12 +125,12 @@ while GAME_RUNNING:
 
        #for each cop in the group, update their attributes and then draw them
     for cop in cops:
-        cop.enemy_auto(gangster,bullets)
+        cop.enemy_auto(gangster,bullets,world)
         cop.update_character()
         cop.draw(window)
  
     #initialise movement variables
-    gangster.move(left,right)
+    gangster.move(left,right,world)
     
     #check if the gangster is alive then carry out functionalities 
     if gangster.alive:
@@ -149,7 +149,7 @@ while GAME_RUNNING:
             gangster.update_action(1)  # 1: run
         else:
             gangster.update_action(0)  # 0: idle
-        gangster.move(left, right)
+        gangster.move(left, right,world)
  
     #Event Handling
     for event in pygame.event.get():

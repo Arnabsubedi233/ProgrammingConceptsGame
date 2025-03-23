@@ -48,8 +48,11 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         self.image = self.animation_list[self.action][self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
+  
     
-    def enemy_auto(self,gangster,bullets):
+    def enemy_auto(self,gangster,bullets,world):
         """
         Controls the automatic behavior of an enemy character.
         Parameters:
@@ -81,7 +84,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
                     else:
                         enemy_moving_right = False
                     enemy_moving_left = not enemy_moving_right
-                    self.move(enemy_moving_left, enemy_moving_right)
+                    self.move(enemy_moving_left, enemy_moving_right,world)
                     self.update_action(1) 
                     self.move_counter += 1
                     self.sight.center = (
@@ -110,7 +113,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             self.shooting_cooldown -= 1
 
  
-    def move (self,left,right):
+    def move (self,left,right,world):
         """
         Moves the character based on input directions and applies gravity.
         Args:
@@ -143,7 +146,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             self.direction = 1
  
         if self.jump and self.in_air == False:
-            self.vel_y = -15
+            self.vel_y = -13
             self.jump = False
             self.in_air = True
  
@@ -151,10 +154,26 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         if self.vel_y > 10:
             self.vel_y
         dy += self.vel_y
- 
-        if self.rect.bottom + dy > 300:
-            dy = 300 - self.rect.bottom
-            self.in_air = False
+
+        if self.character_type == 'gangster':
+            collision_rect = self.rect.inflate(-90, 0)
+        else:
+            collision_rect = self.rect  
+
+        for tile in world.obstacle_list:
+            # Check for collision in the x direction
+            if tile[1].colliderect(collision_rect.x + dx, collision_rect.y, collision_rect.width, collision_rect.height):
+                dx = 0
+            # Check for collision in the y direction
+            if tile[1].colliderect(collision_rect.x, collision_rect.y + dy, collision_rect.width, collision_rect.height):
+                if self.vel_y < 0:
+                    dy = tile[1].bottom - collision_rect.top
+                    self.vel_y = 0
+                elif self.vel_y >= 0:
+                    dy = tile[1].top - collision_rect.bottom
+                    self.vel_y = 0
+                    self.in_air = False
+
  
         self.rect.x += dx
         self.rect.y += dy
@@ -226,8 +245,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         """
         if self.shooting_cooldown == 0 and self.ammo > 0:
             self.shooting_cooldown = 20
-            bullet = Bullet(self.rect.centerx + (0.7 * self.rect.size[0] * self.direction), 255 , self.direction)
-            print(self.health)
+            bullet = Bullet(self.rect.centerx + (0.7 * self.rect.size[0] * self.direction), self.rect.centery + 20 , self.direction)
             bullet_group.add(bullet)
             self.ammo -= 1
  
