@@ -8,7 +8,6 @@ from GameItemsCharacters.exit.exit import Exit
 from GameItemsCharacters.shooter.shooter import ShooterCharacter
 from GameItemsCharacters.healthBar.healthBar import HealthBar
 
-
 img_list = []
 for x in range(TILE_TYPES):
 	img = pygame.image.load(f'images/tiles/{x}.png')
@@ -21,6 +20,10 @@ class World():
 
 	def process_data(self, data, water_group, decoration_group, item_box_group, exit_group, enemy_group):
 		#iterate through each value in level data file
+		self.level_length = len(data[0])
+		for image in img_list:
+			image.convert_alpha()
+
 		for y, row in enumerate(data):
 			for x, tile in enumerate(row):
 				if tile >= 0:
@@ -35,13 +38,18 @@ class World():
 						water = Water(img, x * TILE_SIZE, y * TILE_SIZE)
 						water_group.add(water)
 					elif tile >= 11 and tile <= 14:
+						if tile == 14:
+							img = pygame.transform.scale(img, (TILE_SIZE // 3, TILE_SIZE // 3))
+						elif tile == 11:
+							img = pygame.transform.scale(img, (TILE_SIZE , TILE_SIZE * 2 ))
+	
 						decoration = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
 						decoration_group.add(decoration)
 					elif tile == 15:#create player
-						gangster = ShooterCharacter('gangster', x * TILE_SIZE, y * TILE_SIZE, 0.9, 3, 20, 5)
+						gangster = ShooterCharacter('gangster', x * TILE_SIZE, y * TILE_SIZE, 0.7, 3.5, 40, 5)
 						health_bar = HealthBar(10, 10, gangster.health, gangster.health)
 					elif tile == 16:#create enemies
-						cop = ShooterCharacter('cop', x * TILE_SIZE, y * TILE_SIZE, 0.9, 2, 20, 0)
+						cop = ShooterCharacter('cop', x * TILE_SIZE, y * TILE_SIZE, 0.7, 3, 20, 0)
 						enemy_group.add(cop)
 					elif tile == 17:#create ammo box
 						item_box = ItemBox('Ammo', x * TILE_SIZE, y * TILE_SIZE)
@@ -59,6 +67,7 @@ class World():
 		return gangster, health_bar
 
 
-	def draw(self,window):
+	def draw(self,window,screen_scroll):
 		for tile in self.obstacle_list:
+			tile[1][0] += screen_scroll
 			window.blit(tile[0], tile[1])

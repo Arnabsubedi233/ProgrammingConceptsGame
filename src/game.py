@@ -12,7 +12,6 @@ from constants.gameConstants import *
 from constants.colours import *
 from constants.gameVariables import *
 
-
 #pygame initialisation
 pygame.init()
 
@@ -23,7 +22,27 @@ pygame.display.set_caption('Cops and Robbers Game')
 #Clock Settings
 clock = pygame.time.Clock()
 
+#Game Variables
 level = int(1)
+window_scroll = int(0)
+background_scroll = int(0)
+
+city1_img = pygame.image.load('images/background/city1.png').convert_alpha()
+buildingOverlay_img = pygame.image.load('images/background/buildingOverlay.png').convert_alpha()
+sky_img = pygame.image.load('images/background/sky.png').convert_alpha()
+
+def draw_bg():
+    window.fill(BGCOLOUR)
+    width = sky_img.get_width()
+    buildingOverlay_new_img = pygame.transform.scale(buildingOverlay_img, (buildingOverlay_img.get_width() * 2, buildingOverlay_img.get_height()*2))
+    city1_new_img = pygame.transform.scale(city1_img, (city1_img.get_width() * 2.5, city1_img.get_height()*2.5))
+
+    for x in range(5):
+        window.blit(sky_img, ((x * width) - background_scroll * 0.5, 0))
+        window.blit(buildingOverlay_img, ((x * width) - background_scroll * 0.6, WINDOW_HEIGHT - buildingOverlay_img.get_height() - 300))
+        window.blit(buildingOverlay_new_img, ((x * width) - background_scroll * 0.7, WINDOW_HEIGHT - city1_img.get_height() - 400))
+        window.blit(buildingOverlay_new_img, ((x * width) - background_scroll * 0.8, WINDOW_HEIGHT - city1_img.get_height()-300))
+        window.blit(city1_new_img, ((x * width) - background_scroll * 0.9, WINDOW_HEIGHT - city1_img.get_height()-325))
 
 #Player actions
 left = bool(False)
@@ -39,15 +58,8 @@ font = pygame.font.SysFont('Calibri', 25)
 def text(text, font, text_col, x, y):
 	img = font.render(text, True, text_col)
 	window.blit(img, (x, y))
+     
 
-def draw_background():
-    """
-    Fills the game window with the background color.
-
-    This function uses the global variables 'window' and 'bgColour' to fill the entire
-    game window with the specified background color.
-    """
-    window.fill(BGCOLOUR)
  
 
 #Groups
@@ -80,8 +92,8 @@ gangster, health_bar = world.process_data(world_data,waters,decorations,itemBoxe
  
 while GAME_RUNNING:
     clock.tick(FPS)
-    draw_background()
-    world.draw(window)
+    draw_bg()
+    world.draw(window,window_scroll)
     health_bar.draw(window, gangster.health)
 
     text('AMMO: ', font, WHITE, 10, 35)
@@ -99,38 +111,38 @@ while GAME_RUNNING:
     gangster.draw(window)
 
     #update bullets and draw them
-    bullets.update(WINDOW_WIDTH,cops,gangster,bullets,world)
+    bullets.update(WINDOW_WIDTH,cops,gangster,bullets,world,window_scroll)
     bullets.draw(window)
 
     #update grenades and draw them
-    grenades.update(world,GRAVITY,explosions,gangster,cops,TILE_SIZE)
+    grenades.update(world,GRAVITY,explosions,gangster,cops,TILE_SIZE,window_scroll)
     grenades.draw(window)
 
     #update explosions and draw them
-    explosions.update()
+    explosions.update(window_scroll)
     explosions.draw(window)
 
-    itemBoxes.update(gangster)
+    itemBoxes.update(gangster,window_scroll)
     itemBoxes.draw(window)
 
-    decorations.update()
+    decorations.update(window_scroll)
     decorations.draw(window)
 
-    waters.update()
+    waters.update(window_scroll)
     waters.draw(window)
 
-    exits.update()
+    exits.update(window_scroll)
     exits.draw(window)
 
 
        #for each cop in the group, update their attributes and then draw them
     for cop in cops:
-        cop.enemy_auto(gangster,bullets,world)
+        cop.enemy_auto(gangster,bullets,world,window_scroll,background_scroll)
         cop.update_character()
         cop.draw(window)
  
     #initialise movement variables
-    gangster.move(left,right,world)
+    gangster.move(left,right,world,background_scroll)
     
     #check if the gangster is alive then carry out functionalities 
     if gangster.alive:
@@ -149,8 +161,9 @@ while GAME_RUNNING:
             gangster.update_action(1)  # 1: run
         else:
             gangster.update_action(0)  # 0: idle
-        gangster.move(left, right,world)
- 
+        window_scroll = gangster.move(left, right,world,background_scroll)
+        background_scroll -= window_scroll
+
     #Event Handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

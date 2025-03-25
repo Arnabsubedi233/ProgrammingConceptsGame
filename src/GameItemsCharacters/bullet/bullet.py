@@ -12,7 +12,7 @@ class Bullet(pygame.sprite.Sprite):
 		self.rect.center = (x, y)
 		self.direction = direction
 
-	def update(self, SCREEN_WIDTH, cops,gangster,bullet_group,world):
+	def update(self, SCREEN_WIDTH, cops,gangster,bullet_group,world,screen_scroll):
 		"""
 		Update the bullet's position and handle collisions.
 		Args:
@@ -25,7 +25,8 @@ class Bullet(pygame.sprite.Sprite):
 		their health and is removed.
 		"""
 		#move bullet
-		self.rect.x += (self.direction * self.speed)
+		self.rect.x += (self.direction * self.speed) + screen_scroll
+
 		if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH:
 			self.kill()
 
@@ -42,5 +43,5 @@ class Bullet(pygame.sprite.Sprite):
 		for cop in cops:
 			if pygame.sprite.spritecollide(cop, bullet_group, False):
 				if cop.alive:
-					cop.health -= 15
+					cop.health -= 20
 					self.kill()

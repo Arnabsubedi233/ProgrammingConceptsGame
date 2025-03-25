@@ -16,7 +16,7 @@ class Explosion(pygame.sprite.Sprite):
 		self.count = int(0)
 
 
-	def update(self):
+	def update(self,screen_scroll):
 		"""
         Update the explosion animation.
         This method increments the counter and updates the frame index of the explosion animation.
@@ -29,6 +29,7 @@ class Explosion(pygame.sprite.Sprite):
             frame_index (int): The current frame index of the explosion animation.
             images (list): A list of images representing the explosion animation frames.
         """
+		self.rect.x += screen_scroll
 		SPEED = 4
 		#update explosion amimation
 		self.count += 1

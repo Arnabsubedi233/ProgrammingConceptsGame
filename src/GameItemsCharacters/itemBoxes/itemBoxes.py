@@ -20,7 +20,8 @@ class ItemBox(pygame.sprite.Sprite):
 		self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
 
 
-	def update(self,gangster):
+	def update(self,gangster,screen_scroll):
+		
 		"""
             Update the state of the item box when it collides with a gangster.
             If the item box collides with the gangster, it will apply its effect based on the item type:
@@ -31,6 +32,7 @@ class ItemBox(pygame.sprite.Sprite):
             Args:
                 gangster (Gangster): The gangster object that the item box collides with.
         """
+		self.rect.x += screen_scroll
 		if pygame.sprite.collide_rect(self, gangster):
 	
 			if self.item_type == 'Health':

@@ -2,6 +2,7 @@ import pygame
 import os
 import random
 from constants.gameConstants import *
+from constants.gameVariables import SCROLLING_THRESHOLD, GRAVITY
 from GameItemsCharacters.bullet.bullet import Bullet
 
 class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
@@ -52,7 +53,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         self.height = self.image.get_height()
   
     
-    def enemy_auto(self,gangster,bullets,world):
+    def enemy_auto(self,gangster,bullets,world,screen_scroll,background_scroll):
         """
         Controls the automatic behavior of an enemy character.
         Parameters:
@@ -84,7 +85,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
                     else:
                         enemy_moving_right = False
                     enemy_moving_left = not enemy_moving_right
-                    self.move(enemy_moving_left, enemy_moving_right,world)
+                    self.move(enemy_moving_left, enemy_moving_right,world,background_scroll)
                     self.update_action(1) 
                     self.move_counter += 1
                     self.sight.center = (
@@ -99,6 +100,8 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
                     self.still_counter -= 1
                     if self.still_counter <= 0:
                         self.still = False
+        #scroll
+        self.rect.x += screen_scroll
 
     def update_character(self):
         """
@@ -113,7 +116,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             self.shooting_cooldown -= 1
 
  
-    def move (self,left,right,world):
+    def move (self,left,right,world,bg_scroll):
         """
         Moves the character based on input directions and applies gravity.
         Args:
@@ -131,7 +134,8 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             - Limits the character's vertical velocity to a maximum value.
             - Prevents the character from falling below a certain point (ground level).
         """
-        GRAVITY = float(0.75)
+
+        screen_scroll = int(0)
         dx = int(0)
         dy = int(0)
  
@@ -146,7 +150,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             self.direction = 1
  
         if self.jump and self.in_air == False:
-            self.vel_y = -13
+            self.vel_y = -14
             self.jump = False
             self.in_air = True
  
@@ -173,10 +177,23 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
                     dy = tile[1].top - collision_rect.bottom
                     self.vel_y = 0
                     self.in_air = False
+            
+        
+        if self.character_type == 'gangster':
+            if self.rect.left + dx < 0 or self.rect.right + dx > WINDOW_WIDTH:
+                dx = 0
 
- 
         self.rect.x += dx
         self.rect.y += dy
+
+        if self.character_type == 'gangster':
+            if (self.rect.right > WINDOW_WIDTH - 200 and bg_scroll < (world.level_length * TILE_SIZE) - WINDOW_WIDTH)\
+				or (self.rect.left < 200 and bg_scroll > abs(dx)):
+                self.rect.x -= dx
+                screen_scroll = -dx  
+        return screen_scroll
+
+
  
    
     def animation(self):
