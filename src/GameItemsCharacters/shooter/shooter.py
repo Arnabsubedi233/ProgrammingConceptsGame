@@ -53,7 +53,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         self.height = self.image.get_height()
   
     
-    def enemy_auto(self,gangster,bullets,world,screen_scroll,background_scroll):
+    def enemy_auto(self,gangster,bullets,world,screen_scroll,background_scroll,waters,exits):
         """
         Controls the automatic behavior of an enemy character.
         Parameters:
@@ -85,7 +85,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
                     else:
                         enemy_moving_right = False
                     enemy_moving_left = not enemy_moving_right
-                    self.move(enemy_moving_left, enemy_moving_right,world,background_scroll)
+                    self.move(enemy_moving_left, enemy_moving_right,world,background_scroll,waters,exits)
                     self.update_action(1) 
                     self.move_counter += 1
                     self.sight.center = (
@@ -100,7 +100,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
                     self.still_counter -= 1
                     if self.still_counter <= 0:
                         self.still = False
-        #scroll
+       
         self.rect.x += screen_scroll
 
     def update_character(self):
@@ -116,7 +116,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             self.shooting_cooldown -= 1
 
  
-    def move (self,left,right,world,bg_scroll):
+    def move (self,left,right,world,bg_scroll,waters,exits):
         """
         Moves the character based on input directions and applies gravity.
         Args:
@@ -134,7 +134,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             - Limits the character's vertical velocity to a maximum value.
             - Prevents the character from falling below a certain point (ground level).
         """
-
+        level_end = False
         screen_scroll = int(0)
         dx = int(0)
         dy = int(0)
@@ -156,29 +156,31 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
  
         self.vel_y += GRAVITY
         if self.vel_y > 10:
-            self.vel_y
+            self.vel_y = 10
         dy += self.vel_y
 
-        if self.character_type == 'gangster':
-            collision_rect = self.rect.inflate(-90, 0)
-        else:
-            collision_rect = self.rect  
 
         for tile in world.obstacle_list:
-            # Check for collision in the x direction
-            if tile[1].colliderect(collision_rect.x + dx, collision_rect.y, collision_rect.width, collision_rect.height):
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
                 dx = 0
-            # Check for collision in the y direction
-            if tile[1].colliderect(collision_rect.x, collision_rect.y + dy, collision_rect.width, collision_rect.height):
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
                 if self.vel_y < 0:
-                    dy = tile[1].bottom - collision_rect.top
                     self.vel_y = 0
+                    dy = tile[1].bottom - self.rect.top
                 elif self.vel_y >= 0:
-                    dy = tile[1].top - collision_rect.bottom
                     self.vel_y = 0
                     self.in_air = False
-            
+                    dy = tile[1].top - self.rect.bottom
         
+        if pygame.sprite.spritecollide(self, waters, False):
+            self.health = 0
+        
+        if pygame.sprite.spritecollide(self, exits, False):
+            level_end = True
+        
+        if self.rect.bottom > WINDOW_HEIGHT:
+            self.health = 0
+            
         if self.character_type == 'gangster':
             if self.rect.left + dx < 0 or self.rect.right + dx > WINDOW_WIDTH:
                 dx = 0
@@ -187,11 +189,11 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         self.rect.y += dy
 
         if self.character_type == 'gangster':
-            if (self.rect.right > WINDOW_WIDTH - 200 and bg_scroll < (world.level_length * TILE_SIZE) - WINDOW_WIDTH)\
-				or (self.rect.left < 200 and bg_scroll > abs(dx)):
+            if (self.rect.right > WINDOW_WIDTH - SCROLLING_THRESHOLD and bg_scroll < (world.level_length * TILE_SIZE) - WINDOW_WIDTH) or (self.rect.left < SCROLLING_THRESHOLD and bg_scroll > abs(dx)):
                 self.rect.x -= dx
                 screen_scroll = -dx  
-        return screen_scroll
+
+        return screen_scroll, level_end
 
 
  
@@ -262,7 +264,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         """
         if self.shooting_cooldown == 0 and self.ammo > 0:
             self.shooting_cooldown = 20
-            bullet = Bullet(self.rect.centerx + (0.7 * self.rect.size[0] * self.direction), self.rect.centery + 20 , self.direction)
+            bullet = Bullet(self.rect.centerx + (0.7 * self.rect.size[0] * self.direction), self.rect.centery, self.direction)
             bullet_group.add(bullet)
             self.ammo -= 1
  
