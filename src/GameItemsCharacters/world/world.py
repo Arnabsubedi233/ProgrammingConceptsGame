@@ -46,10 +46,10 @@ class World():
 						decoration = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
 						decoration_group.add(decoration)
 					elif tile == 15:#create player
-						gangster = ShooterCharacter('gangster', x * TILE_SIZE, y * TILE_SIZE, 0.7, 3.5, 40, 5)
+						gangster = ShooterCharacter('gangster', x * TILE_SIZE, y * TILE_SIZE, 0.8, 5 ,40, 5)
 						health_bar = HealthBar(10, 10, gangster.health, gangster.health)
 					elif tile == 16:#create enemies
-						cop = ShooterCharacter('cop', x * TILE_SIZE, y * TILE_SIZE, 0.7, 3, 20, 0)
+						cop = ShooterCharacter('cop', x * TILE_SIZE, y * TILE_SIZE, 0.9, 3, 20, 0)
 						enemy_group.add(cop)
 					elif tile == 17:#create ammo box
 						item_box = ItemBox('Ammo', x * TILE_SIZE, y * TILE_SIZE)
