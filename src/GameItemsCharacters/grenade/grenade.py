@@ -16,7 +16,7 @@ class Grenade(pygame.sprite.Sprite):
         self.width = self.image.get_width()
         self.height = self.image.get_height()
 
-    def update(self, world, GRAVITY,explosion_group,gangster,cop_group,TILE_SIZE):
+    def update(self, world, GRAVITY,explosion_group,gangster,cop_group,TILE_SIZE,screen_scroll):
         self.vel_y += GRAVITY
         dx = self.direction * self.speed
         dy = self.vel_y
@@ -35,7 +35,7 @@ class Grenade(pygame.sprite.Sprite):
                     dy = tile[1].top - self.rect.bottom	
 
         # update grenade position
-        self.rect.x += dx
+        self.rect.x += dx + screen_scroll
         self.rect.y += dy
 
         self.clock -= 1
