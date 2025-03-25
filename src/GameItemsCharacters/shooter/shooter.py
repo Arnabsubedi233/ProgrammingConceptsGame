@@ -5,6 +5,8 @@ from constants.gameConstants import *
 from constants.gameVariables import SCROLLING_THRESHOLD, GRAVITY
 from GameItemsCharacters.bullet.bullet import Bullet
 
+
+
 class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
     def __init__(self,character_type,x, y, scale,speed,ammo,grenades):
         pygame.sprite.Sprite.__init__(self)
@@ -53,7 +55,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         self.height = self.image.get_height()
   
     
-    def enemy_auto(self,gangster,bullets,world,screen_scroll,background_scroll,waters,exits):
+    def enemy_auto(self,gangster,bullets,world,screen_scroll,background_scroll,waters,exits,shooting_sound):
         """
         Controls the automatic behavior of an enemy character.
         Parameters:
@@ -76,7 +78,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
                 self.still_counter = 50
             if self.sight.colliderect(gangster.rect):
                 self.update_action(0) 
-                self.shoot(bullets)
+                self.shoot(bullets,shooting_sound)
                 
             else:
                 if self.still == False:
@@ -247,7 +249,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             self.alive = bool(False)
             self.update_action(3)
     
-    def shoot(self,bullet_group):
+    def shoot(self,bullet_group,shooting_sound):
         """
         Handles the shooting action for the character.
 
@@ -267,6 +269,7 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             bullet = Bullet(self.rect.centerx + (0.7 * self.rect.size[0] * self.direction), self.rect.centery, self.direction)
             bullet_group.add(bullet)
             self.ammo -= 1
+            shooting_sound.play()
  
     def update_action(self, new_action):
         """

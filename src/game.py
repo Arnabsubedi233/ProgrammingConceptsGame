@@ -9,6 +9,7 @@ from GameItemsCharacters.water.water import *
 from GameItemsCharacters.world.world import *
 from GameItemsCharacters.exit.exit import *
 from GameItemsCharacters.button.button import *
+from GameItemsCharacters.screenFade.screenfade import *
 from constants.gameConstants import *
 from constants.colours import *
 from constants.gameVariables import *
@@ -29,6 +30,18 @@ level = int(1)
 window_scroll = int(0)
 background_scroll = int(0)
 game_running = True
+intro = False
+
+#sounds
+jump_sound = pygame.mixer.Sound('sounds/jump.mp3')
+jump_sound.set_volume(0.5)
+shooting_sound = pygame.mixer.Sound('sounds/shot.wav')
+grenade_sound = pygame.mixer.Sound('sounds/grenade.wav')
+
+
+
+
+
 
 #background configurations
 start = pygame.image.load('images/ui/Start.png').convert_alpha()
@@ -92,6 +105,9 @@ start_button = Button(WINDOW_WIDTH // 2- 200 , WINDOW_HEIGHT // 2 - 125 , start,
 exit_button = Button(WINDOW_WIDTH // 2-200 , WINDOW_HEIGHT // 2 + 75, exit, 2)
 restart_button = Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 50, restart, 2)
 
+#create screen fades
+intro_fade = ScreenFade(1, BLACK, 9)
+death_fade = ScreenFade(2, RED, 9)
 
 #Groups
 bullets = pygame.sprite.Group()
@@ -128,6 +144,7 @@ while game_running:
          window.fill(BLACK)
          if start_button.draw(window):
                 game_start = True
+                intro = True
          if exit_button.draw(window):
                 game_running = False
     else:
@@ -154,7 +171,7 @@ while game_running:
         bullets.draw(window)
 
         #update grenades and draw them
-        grenades.update(world,GRAVITY,explosions,gangster,cops,TILE_SIZE,window_scroll)
+        grenades.update(world,GRAVITY,explosions,gangster,cops,TILE_SIZE,window_scroll,grenade_sound)
         grenades.draw(window)
 
         #update explosions and draw them
@@ -173,10 +190,14 @@ while game_running:
         exits.update(window_scroll)
         exits.draw(window)
 
+        if intro == True:
+             if intro_fade.fade(window):
+                intro = False
+                intro_fade.fade_counter = 0
 
         #for each cop in the group, update their attributes and then draw them
         for cop in cops:
-            cop.enemy_auto(gangster,bullets,world,window_scroll,background_scroll,waters,exits)
+            cop.enemy_auto(gangster,bullets,world,window_scroll,background_scroll,waters,exits,shooting_sound)
             cop.update_character()
             cop.draw(window)
     
@@ -185,7 +206,7 @@ while game_running:
         #check if the gangster is alive then carry out functionalities 
         if gangster.alive:
             if shooting:
-                gangster.shoot(bullets)
+                gangster.shoot(bullets,shooting_sound)
             elif grenade and throw_grenade == False and gangster.grenades > 0:
                 grenade = Grenade(gangster.rect.centerx + (0.5 * gangster.rect.size[0] * gangster.direction),\
                                 gangster.rect.top, gangster.direction)
@@ -195,6 +216,7 @@ while game_running:
                 throw_grenade = True
             if gangster.in_air:
                 gangster.update_action(2)  # 2: jump
+                jump_sound.play()
             elif left or right:
                 gangster.update_action(1)  # 1: run
             else:
@@ -202,6 +224,7 @@ while game_running:
             window_scroll,level_end = gangster.move(left, right,world,background_scroll,waters,exits)
             background_scroll -= window_scroll
             if level_end:
+                 start_intro = True
                  level += 1
                  print(level)
                  background_scroll = 0
@@ -216,16 +239,19 @@ while game_running:
                     gangster, health_bar = world.process_data(world_data,waters,decorations,itemBoxes,exits,cops)
         else:
              window_scroll = 0
-             if restart_button.draw(window):
-                background_scroll = 0
-                world_data = level_reset()
-                with open(f'levels/level{level}_data.csv', newline='') as csvfile:
-                    reader = csv.reader(csvfile, delimiter=',')
-                    for x, row in enumerate(reader):
-                        for y, tile in enumerate(row):
-                            world_data[x][y] = int(tile)
-                world = World()
-                gangster, health_bar = world.process_data(world_data,waters,decorations,itemBoxes,exits,cops)
+             if death_fade.fade(window):
+                if restart_button.draw(window):
+                    death_fade.fade_counter = 0
+                    intro = True
+                    background_scroll = 0
+                    world_data = level_reset()
+                    with open(f'levels/level{level}_data.csv', newline='') as csvfile:
+                        reader = csv.reader(csvfile, delimiter=',')
+                        for x, row in enumerate(reader):
+                            for y, tile in enumerate(row):
+                                world_data[x][y] = int(tile)
+                    world = World()
+                    gangster, health_bar = world.process_data(world_data,waters,decorations,itemBoxes,exits,cops)
 
     #Event Handling
     for event in pygame.event.get():
