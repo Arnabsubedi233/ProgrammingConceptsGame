@@ -3,10 +3,11 @@ from GameItemsCharacters.explosion.explosion import Explosion
 
 grenadeImg = pygame.image.load('images/gameItems/Grenade.png')
 
+
 class Grenade(pygame.sprite.Sprite):
     def __init__(self, x, y, direction):
         pygame.sprite.Sprite.__init__(self)
-        self.clock = 100
+        self.clock = 300
         self.vel_y = -11
         self.speed = 7
         self.image = grenadeImg
@@ -16,7 +17,7 @@ class Grenade(pygame.sprite.Sprite):
         self.width = self.image.get_width()
         self.height = self.image.get_height()
 
-    def update(self, world, GRAVITY,explosion_group,gangster,cop_group,TILE_SIZE,screen_scroll):
+    def update(self, world, GRAVITY,explosion_group,gangster,cop_group,TILE_SIZE,screen_scroll,grenade_sound):
         self.vel_y += GRAVITY
         dx = self.direction * self.speed
         dy = self.vel_y
@@ -38,6 +39,7 @@ class Grenade(pygame.sprite.Sprite):
         self.rect.x += dx + screen_scroll
         self.rect.y += dy
 
+        grenade_sound.play()
         self.clock -= 1
         if self.clock <= 0:
             self.kill()
