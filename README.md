@@ -58,5 +58,3 @@ python game.py
 ---
 
 Enjoy playing **Law And Disorder**!
-```
-
