@@ -37,6 +37,7 @@ intro = bool(False)
 jump_sound = pygame.mixer.Sound('sounds/jump.mp3')
 shooting_sound = pygame.mixer.Sound('sounds/shot.wav')
 grenade_sound = pygame.mixer.Sound('sounds/grenade.wav')
+death_sound = pygame.mixer.Sound('sounds/death.mp3')
 
 #background configurations
 start = pygame.image.load('images/ui/Start.png').convert_alpha()
@@ -293,6 +294,7 @@ while game_running:
         else:
              window_scroll = 0
              if death_fade.fade(window):
+                death_sound.play()
                 window.blit(gameover, (WINDOW_WIDTH // 2- 200 , WINDOW_HEIGHT // 2 - 200 ))
                 if restart_button.draw(window):
                     death_fade.fade_counter = 0
