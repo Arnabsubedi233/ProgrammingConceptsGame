@@ -27,7 +27,7 @@ clock = pygame.time.Clock()
 
 #Game Variables with strict type casting
 game_start = bool(False)
-level = int(3)
+level = int(1)
 window_scroll = int(0)
 background_scroll = int(0)
 game_running = bool(True)
@@ -246,7 +246,6 @@ while game_running:
                 gangster.shoot(bullets,shooting_sound)
             #throw grenades
             elif grenade and throw_grenade == False and gangster.grenades > 0:
-                grenade_sound.play()
                 grenade = Grenade(gangster.rect.centerx + (0.5 * gangster.rect.size[0] * gangster.direction),\
                                 gangster.rect.top, gangster.direction)
                 grenades.add(grenade)
@@ -255,7 +254,6 @@ while game_running:
             #jump
             if gangster.in_air:
                 gangster.update_action(2)  # 2: jump
-                jump_sound.play()
             #movement left or right
             elif left or right:
                 gangster.update_action(1)
@@ -319,12 +317,14 @@ while game_running:
                 right = True
             if event.key == pygame.K_w and gangster.alive:
                 gangster.jump = True
+                jump_sound.play()
             if event.key == pygame.K_SPACE:
                 shooting = True
             if event.key == pygame.K_ESCAPE:
                 game_running = False
             if event.key == pygame.K_q:
                 grenade = True
+                grenade_sound.play()
  
  
         #Reset Events
