@@ -11,6 +11,25 @@ itemBoxes = {
 }
 
 class ItemBox(pygame.sprite.Sprite):
+	"""
+	A class to represent an item box in the game.
+	Attributes:
+	-----------
+	item_type : str
+		The type of item contained in the box (e.g., 'Health', 'Ammo', 'Grenade').
+	original_image : pygame.Surface
+		The original image of the item box.
+	image : pygame.Surface
+		The scaled image of the item box.
+	rect : pygame.Rect
+		The rectangular area of the item box for collision detection.
+	Methods:
+	--------
+	__init__(item_type, x, y):
+		Initializes the item box with the specified type and position.
+	update(gangster, screen_scroll):
+		Updates the position of the item box and checks for collisions with the gangster.
+	"""
 	def __init__(self, item_type, x, y):
 		pygame.sprite.Sprite.__init__(self)
 		self.item_type = item_type
@@ -21,22 +40,11 @@ class ItemBox(pygame.sprite.Sprite):
 
 
 	def update(self,gangster,screen_scroll):
-		
-		"""
-            Update the state of the item box when it collides with a gangster.
-            If the item box collides with the gangster, it will apply its effect based on the item type:
-            - 'Health': Increases the gangster's health by 25, up to the maximum health.
-            - 'Ammo': Increases the gangster's ammo by 15.
-            - 'Grenade': Increases the gangster's grenades by 3.
-            After applying the effect, the item box is removed from the game.
-            Args:
-                gangster (Gangster): The gangster object that the item box collides with.
-        """
 		self.rect.x += screen_scroll
 		if pygame.sprite.collide_rect(self, gangster):
 	
 			if self.item_type == 'Health':
-				gangster.health += 30
+				gangster.health += 60
 				if gangster.health > gangster.max_health:
 					gangster.health = gangster.max_health
 			elif self.item_type == 'Ammo':

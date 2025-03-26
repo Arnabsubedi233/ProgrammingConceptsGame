@@ -2,6 +2,23 @@ import pygame
 from constants.colours import *
 
 class HealthBar():
+	"""
+	A class to represent a health bar in a game.
+	Attributes
+	----------
+	x : int
+		The x-coordinate of the health bar.
+	y : int
+		The y-coordinate of the health bar.
+	health : int
+		The current health value.
+	max_health : int
+		The maximum health value.
+	Methods
+	-------
+	draw(window, health):
+		Draws the health bar on the given window with the updated health value.
+	"""
 	def __init__(self, x, y, health, max_health):
 		self.x = x
 		self.y = y
@@ -9,18 +26,6 @@ class HealthBar():
 		self.max_health = max_health
 
 	def draw(self,window, health):
-		"""
-            Draws the health bar on the given window.
-
-            Parameters:
-            window (pygame.Surface): The surface on which to draw the health bar.
-            health (int): The current health value to be displayed on the health bar.
-
-            The health bar is drawn with three rectangles:
-            - A black border rectangle.
-            - A red background rectangle representing the empty health.
-            - A green foreground rectangle representing the current health based on the health ratio.
-        """
 		#update with new health
 		self.health = health
 		#calculate health ratio

@@ -5,6 +5,31 @@ grenadeImg = pygame.image.load('images/gameItems/Grenade.png')
 
 
 class Grenade(pygame.sprite.Sprite):
+    """
+    A class to represent a grenade in the game.
+    Attributes
+    ----------
+    clock : int
+        The timer for the grenade before it explodes.
+    vel_y : int
+        The vertical velocity of the grenade.
+    speed : int
+        The horizontal speed of the grenade.
+    image : pygame.Surface
+        The image of the grenade.
+    rect : pygame.Rect
+        The rectangle representing the grenade's position and size.
+    direction : int
+        The direction the grenade is moving in.
+    width : int
+        The width of the grenade image.
+    height : int
+        The height of the grenade image.
+    Methods
+    -------
+    update(world, GRAVITY, explosion_group, gangster, cop_group, TILE_SIZE, screen_scroll):
+        Updates the grenade's position and checks for collisions and explosions.
+    """
     def __init__(self, x, y, direction):
         pygame.sprite.Sprite.__init__(self)
         self.clock = 300
@@ -17,7 +42,7 @@ class Grenade(pygame.sprite.Sprite):
         self.width = self.image.get_width()
         self.height = self.image.get_height()
 
-    def update(self, world, GRAVITY,explosion_group,gangster,cop_group,TILE_SIZE,screen_scroll,grenade_sound):
+    def update(self, world, GRAVITY,explosion_group,gangster,cop_group,TILE_SIZE,screen_scroll):
         self.vel_y += GRAVITY
         dx = self.direction * self.speed
         dy = self.vel_y
@@ -39,7 +64,6 @@ class Grenade(pygame.sprite.Sprite):
         self.rect.x += dx + screen_scroll
         self.rect.y += dy
 
-        grenade_sound.play()
         self.clock -= 1
         if self.clock <= 0:
             self.kill()
@@ -53,7 +77,7 @@ class Grenade(pygame.sprite.Sprite):
             for enemy in cop_group:
                 if abs(self.rect.centerx - enemy.rect.centerx) < TILE_SIZE * 2 and \
                 abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 2:
-                    enemy.health -= 50
+                    enemy.health -= 100
 
 
 

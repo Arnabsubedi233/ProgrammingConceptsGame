@@ -8,6 +8,74 @@ from GameItemsCharacters.bullet.bullet import Bullet
 
 
 class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
+    class ShooterCharacter(pygame.sprite.Sprite):
+        """
+        A class to represent a shooter character in the game.
+        Attributes:
+        ----------
+        character_type : str
+            The type of the character (e.g., 'gangster').
+        speed : int
+            The speed of the character.
+        ammo : int
+            The amount of ammunition the character has.
+        begin_ammo : int
+            The initial amount of ammunition the character has.
+        shooting_cooldown : int
+            The cooldown time between shots.
+        health : float
+            The health of the character.
+        grenades : int
+            The number of grenades the character has.
+        max_health : float
+            The maximum health of the character.
+        direction : int
+            The direction the character is facing (1 for right, -1 for left).
+        flip : bool
+            Whether the character's image should be flipped.
+        alive : bool
+            Whether the character is alive.
+        vel_y : float
+            The vertical velocity of the character.
+        jump : bool
+            Whether the character is jumping.
+        in_air : bool
+            Whether the character is in the air.
+        animation_list : list
+            A list of animations for the character.
+        frame_index : int
+            The current frame index of the animation.
+        action : int
+            The current action of the character.
+        update_time : int
+            The time when the animation was last updated.
+        move_counter : int
+            A counter for the character's movement.
+        sight : pygame.Rect
+            The sight range of the character.
+        still : bool
+            Whether the character is still.
+        still_counter : int
+            A counter for how long the character remains still.
+        Methods:
+        -------
+        enemy_auto(gangster, bullets, world, screen_scroll, background_scroll, waters, exits, shooting_sound):
+            Controls the automatic behavior of the enemy character.
+        update_character():
+            Updates the character's animation and checks if the character is alive.
+        move(left, right, world, bg_scroll, waters, exits):
+            Moves the character based on input and checks for collisions.
+        animation():
+            Updates the character's animation.
+        check_alive():
+            Checks if the character is alive and updates its state.
+        shoot(bullet_group, shooting_sound):
+            Shoots a bullet if the cooldown period has passed and the character has ammo.
+        update_action(new_action):
+            Updates the character's action and resets the animation frame index.
+        draw(window):
+            Draws the character on the given window.
+        """
     def __init__(self,character_type,x, y, scale,speed,ammo,grenades):
         pygame.sprite.Sprite.__init__(self)
         #Character attributes
@@ -56,21 +124,6 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
   
     
     def enemy_auto(self,gangster,bullets,world,screen_scroll,background_scroll,waters,exits,shooting_sound):
-        """
-        Controls the automatic behavior of an enemy character.
-        Parameters:
-        gangster (object): The enemy character that this character interacts with.
-        bullets (list): A list to store bullets fired by the enemy.
-        Behavior:
-        - If both the enemy and the gangster are alive:
-            - If the enemy is not still and a random condition is met, the enemy stops moving for a short period.
-            - If the gangster is within the enemy's sight, the enemy stops moving and shoots.
-            - If the gangster is not within sight and the enemy is not still:
-                - The enemy moves in the current direction and updates its action.
-                - The enemy's sight is adjusted based on its direction.
-                - If the enemy has moved a certain distance, it changes direction.
-            - If the enemy is still, it counts down the still counter and resumes movement when the counter reaches zero.
-        """
         if self.alive and gangster.alive:
             if self.still == False and random.randint(1, 200) == 1:
                 self.update_action(0)  
@@ -106,12 +159,6 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
         self.rect.x += screen_scroll
 
     def update_character(self):
-        """
-        Updates the character's state by performing the following actions:
-        - Calls the animation method to update the character's animation.
-        - Checks if the character is alive by calling the check_alive method.
-        - Decreases the shooting cooldown timer if it is greater than zero.
-        """
         self.animation()
         self.check_alive()
         if self.shooting_cooldown > 0:
@@ -119,23 +166,6 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
 
  
     def move (self,left,right,world,bg_scroll,waters,exits):
-        """
-        Moves the character based on input directions and applies gravity.
-        Args:
-            left (bool): If True, move the character to the left.
-            right (bool): If True, move the character to the right.
-        Attributes:
-            GRAVITY (float): The gravity constant affecting the character's vertical velocity.
-            dx (int): The change in the character's horizontal position.
-            dy (int): The change in the character's vertical position.
-        Behavior:
-            - Moves the character left or right based on input.
-            - Flips the character's direction based on movement.
-            - Initiates a jump if the character is not already in the air.
-            - Applies gravity to the character's vertical velocity.
-            - Limits the character's vertical velocity to a maximum value.
-            - Prevents the character from falling below a certain point (ground level).
-        """
         level_end = False
         screen_scroll = int(0)
         dx = int(0)
@@ -201,26 +231,6 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
  
    
     def animation(self):
-        """
-        Updates the current animation frame of the character.
-
-        This method updates the character's image to the next frame in the animation
-        sequence based on the current action and frame index. It also handles the
-        timing of the frame updates using a cooldown period.
-
-        Attributes:
-            COOLDOWN (int): The time in milliseconds between frame updates.
-            self.image (Surface): The current image of the character based on the animation list.
-            self.animation_list (list): A list of lists containing animation frames for different actions.
-            self.action (int): The current action being performed by the character.
-            self.frame_index (int): The current frame index in the animation list.
-            self.update_time (int): The time when the last frame update occurred.
-
-        Behavior:
-            - Updates the character's image to the next frame in the animation list.
-            - Resets the frame index to 0 if the end of the animation list is reached,
-              except for action 3, where the frame index is set to the last frame.
-        """
         COOLDOWN = 100
         self.image = self.animation_list[self.action][self.frame_index]
         if pygame.time.get_ticks() - self.update_time > COOLDOWN:
@@ -233,16 +243,6 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
                 self.frame_index = 0
 
     def check_alive(self):
-        """
-        Check if the character is alive based on its health.
-
-        If the character's health is less than or equal to 0, set the health to 0,
-        speed to 0, and alive status to False. Also, update the character's action
-        to a specific state (e.g., death animation).
-
-        Returns:
-            None
-        """
         if self.health <= 0:
             self.health = float(0)
             self.speed = float(0)
@@ -250,20 +250,6 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             self.update_action(3)
     
     def shoot(self,bullet_group,shooting_sound):
-        """
-        Handles the shooting action for the character.
-
-        Args:
-            bullet_group (pygame.sprite.Group): The group to which the new bullet will be added.
-
-        Behavior:
-            - Checks if the shooting cooldown is zero and there is ammo available.
-            - Resets the shooting cooldown to 20.
-            - Creates a new bullet at the character's position, adjusted by direction.
-            - Prints the character's current health.
-            - Adds the new bullet to the bullet group.
-            - Decreases the ammo count by 1.
-        """
         if self.shooting_cooldown == 0 and self.ammo > 0:
             self.shooting_cooldown = 20
             bullet = Bullet(self.rect.centerx + (0.7 * self.rect.size[0] * self.direction), self.rect.centery, self.direction)
@@ -272,14 +258,6 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
             shooting_sound.play()
  
     def update_action(self, new_action):
-        """
-        Update the current action of the shooter.
-
-        Args:
-            new_action (int): The new action to be set. If it is different from the current action,
-                              the action will be updated, the frame index will be reset to 0, and
-                              the update time will be set to the current time in milliseconds.
-        """
         if new_action != self.action:
             self.action = new_action
             self.frame_index = 0
@@ -288,10 +266,4 @@ class ShooterCharacter(pygame.sprite.Sprite): #This class is a subcla
  
  
     def draw(self,window):
-        """
-        Draws the shooter character on the given window.
-
-        Args:
-            window (pygame.Surface): The surface on which to draw the shooter character.
-        """
         window.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)

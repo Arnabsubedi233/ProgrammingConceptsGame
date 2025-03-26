@@ -2,6 +2,23 @@ import pygame
 
 #button class
 class Button():
+	"""
+    A class to represent a button in a Pygame application.
+    Attributes
+    ----------
+    image : pygame.Surface
+        The scaled image of the button.
+    rect : pygame.Rect
+        The rectangle area of the button.
+    clicked : bool
+        A flag to check if the button has been clicked.
+    Methods
+    -------
+    __init__(x, y, image, scale):
+        Initializes the button with position, image, and scale.
+    draw(window):
+        Draws the button on the given window and checks for click events.
+    """
 	def __init__(self,x, y, image, scale):
 		width = image.get_width()
 		height = image.get_height()
