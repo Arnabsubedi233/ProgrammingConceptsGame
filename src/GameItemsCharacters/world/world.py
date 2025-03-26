@@ -15,6 +15,23 @@ for x in range(TILE_TYPES):
 	img_list.append(img)
 
 class World():
+	"""
+	A class to represent the game world.
+	Attributes
+	----------
+	obstacle_list : list
+		A list to store obstacle tiles in the game world.
+	level_length : int
+		The length of the level data.
+	Methods
+	-------
+	__init__():
+		Initializes the World object with an empty obstacle list.
+	process_data(data, water_group, decoration_group, item_box_group, exit_group, enemy_group):
+		Processes the level data to create game objects and add them to their respective groups.
+	draw(window, screen_scroll):
+		Draws the obstacles on the game window and updates their positions based on screen scroll.
+	"""
 	def __init__(self):
 		self.obstacle_list = []
 
@@ -61,6 +78,7 @@ class World():
 						item_box = ItemBox('Health', x * TILE_SIZE, y * TILE_SIZE)
 						item_box_group.add(item_box)
 					elif tile == 20:#create exit
+						img = pygame.transform.scale(img, (TILE_SIZE *3 , TILE_SIZE * 3 ))
 						exit = Exit(img, x * TILE_SIZE, y * TILE_SIZE)
 						exit_group.add(exit)
 

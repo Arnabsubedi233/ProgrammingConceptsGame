@@ -2,6 +2,21 @@ import pygame
 from constants.gameConstants import *
 
 class Exit(pygame.sprite.Sprite):
+	"""
+	A class to represent an exit in the game.
+	Attributes
+	----------
+	image : pygame.Surface
+		The image representing the exit.
+	rect : pygame.Rect
+		The rectangular area of the image.
+	Methods
+	-------
+	__init__(img, x, y):
+		Initializes the Exit object with an image and position.
+	update(screen_scroll):
+		Updates the position of the exit based on the screen scroll.
+	"""
 	def __init__(self, img, x, y):
 		pygame.sprite.Sprite.__init__(self)
 		self.image = img
